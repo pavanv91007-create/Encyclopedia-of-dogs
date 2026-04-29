@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>first page</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-image: url("BGIMG.jpeg");
+            background-size: cover;
+            background-attachment: fixed;
+
+
+
+        }
+
+        /* HEADING */
+        .heading_one {
+            text-align: center;
+            margin-top: 150px;
+        }
+
+        /* GRADIENT TEXT */
+        .heading_one h1 {
+            font-size: 50px;
+            background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ADEDE, #ff6ec4);
+            background-size: 800% 800%;
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            animation: gradientMove 6s ease infinite,
+                slideText 3s ease forwards;
+        }
+
+        /* TEXT SLIDE ANIMATION */
+        @keyframes slideText {
+            from {
+                transform: translateX(-200px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* GRADIENT ANIMATION */
+        fi @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* BUTTON */
+        .div1 {
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .button1 {
+            height: 90px;
+            width: 220px;
+            font-size: 28px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+
+            color: white;
+            background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ADEDE);
+            background-size: 400% 400%;
+
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            animation: gradientMove 5s ease infinite;
+        }
+
+        /* BUTTON HOVER */
+        .button1:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="heading_one">
+        <h1>Explore the World of Our Furry Friends</h1>
+    </div>
+
+    <div class="div1">
+        <a href="secondpage.html">
+            <button class="button1">ENTER</button>
+        </a>
+    </div>
+
+</body>
+
+</html>

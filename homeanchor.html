@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dog Encyclopedia A–Z</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #ffe9d2 0, #f5f7fb 40%, #e3edf7 100%);
+            color: #222;
+            display: flex;
+            justify-content: center;
+            padding: 24px 12px;
+            cursor: url("https://cur.cursors-4u.net/animals/ani-12/ani1150.png"), auto;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 1300px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        header p {
+            margin-top: 6px;
+            color: #555;
+        }
+
+        .search-row {
+            margin: 22px auto;
+            max-width: 520px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-row input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid #ccc;
+            font-size: 0.95rem;
+            outline: none;
+            transition: box-shadow .2s, border-color .2s;
+        }
+
+        .search-row input:focus {
+            border-color: #ff8a5c;
+            box-shadow: 0 0 0 3px rgba(255, 138, 92, .25);
+        }
+
+        .search-row button {
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: none;
+            background: #ff8a5c;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background  .2s, transform .1s, box-shadow .2s;
+            box-shadow: 1px 1px 1px 1px black;
+        }
+
+        .search-row button:hover {
+            background: #ff6a3a;
+            transform: translateY(-1px);
+        }
+
+        .search-row button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, .18);
+        }
+
+        .letters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+            justify-content: center;
+        }
+
+        .letter-chip {
+            padding: 5px 10px;
+            border-radius: 999px;
+            border: 1px solid #ddd;
+            font-size: 0.8rem;
+            cursor: pointer;
+            background: #fff;
+            transition: background .2s, border-color .2s, color .2s, transform .1s;
+        }
+
+        .letter-chip:hover {
+            background: #ffefe7;
+            border-color: #ff8a5c;
+            transform: translateY(-1px);
+        }
+
+        .letter-chip.active {
+            background: #ff8a5c;
+            border-color: #ff8a5c;
+            color: #fff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
+            perspective: 1000px;
+        }
+
+        .card {
+            height: 420px;
+            max-width: 280px;
+            width: 100%;
+            position: relative;
+            will-change: transform;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+            cursor: pointer;
+            background: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+        
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px  35px rgba(0, 0, 0, 0.738);
+        }
+
+        .card-face {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-front {
+            justify-content: flex-start;
+        }
+
+        .card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 12px 13px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            color: #222;
+        }
+
+        .card-meta {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .card-details {
+            font-size: 0.75rem;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .card-details-item {
+            margin-bottom: 4px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .card-details-label {
+            font-weight: 600;
+            color: #ff8a5c;
+            min-width: fit-content;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: #555;
+            line-height: 1.4;
+            margin-top: auto;
+            font-style: italic;
+        }
+
+        .badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, .6);
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 3px 7px;
+            border-radius: 999px;
+            z-index: 2;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 18px;
+        }
+
+        @media(max-width:600px) {
+            h1 {
+                font-size: 1.9rem;
+            }
+
+            .search-row {
+                flex-direction: column;
+            }
+
+            .search-row button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Dog Encyclopedia</h1>
+            <p>All the listed breeds A–Z with images, quick search, and short descriptions.</p>
+        </header>
+
+        <div class="search-row">
+            <input id="searchInput" type="text"
+                placeholder="Search by name, letter (A, B, C...), or keyword (hound, terrier, shepherd...)">
+            <button id="clearBtn">Clear</button>
+        </div>
+
+        <div class="letters" id="letters"></div>
+
+        <div id="grid" class="grid"></div>
+
+        <div class="footer">Images are cached locally, so they persist even after page refresh!</div>
+    </div>
+
+<script>
+// 1. BREED DATA WITH EXTENDED DETAILS - 200+ DOG BREEDS
+const breeds = [
+        { n: "Affenpinscher", l: "A", g: "Toy", d: "Small, monkey-like toy dog, lively and confident.", life: "12-14 years", height: "25-30 cm", weight: "3-6 kg" },
+        { n: "Afghan Hound", l: "A", g: "Hound", d: "Elegant sighthound with long silky coat, independent and graceful.", life: "12-18 years", height: "64-74 cm", weight: "20-27 kg" },
+        { n: "Airedale Terrier", l: "A", g: "Terrier", d: "Largest terrier breed, energetic and versatile working dog.", life: "11-14 years", height: "56-64 cm", weight: "20-29 kg" },
+        { n: "Akita", l: "A", g: "Working", d: "Powerful Japanese breed, dignified and loyal guardian.", life: "10-14 years", height: "61-71 cm", weight: "34-59 kg" },
+        { n: "Alaskan Malamute", l: "A", g: "Working", d: "Strong Arctic sled dog, friendly and powerful companion.", life: "10-14 years", height: "58-71 cm", weight: "34-54 kg" },
+        { n: "American Bulldog", l: "A", g: "Working", d: "Athletic bulldog, confident and naturally protective.", life: "10-16 years", height: "51-66 cm", weight: "27-54 kg" },
+        { n: "American Cocker Spaniel", l: "A", g: "Sporting", d: "Small gundog with long ears, cheerful and gentle.", life: "12-15 years", height: "36-39 cm", weight: "11-13 kg" },
+        { n: "American Hairless Terrier", l: "A", g: "Terrier", d: "Hairless terrier, active and curious with low shedding.", life: "14-16 years", height: "25-41 cm", weight: "2.7-3.6 kg" },
+        { n: "American Pit Bull Terrier", l: "A", g: "Terrier", d: "Strong and athletic, loyal to family members.", life: "12-14 years", height: "43-53 cm", weight: "14-36 kg" },
+        { n: "Australian Cattle Dog", l: "A", g: "Herding", d: "Heeler breed, tough and highly active worker.", life: "12-16 years", height: "43-51 cm", weight: "14-20 kg" },
+        { n: "Australian Shepherd", l: "A", g: "Herding", d: "Smart herding breed, very trainable and energetic.", life: "13-15 years", height: "46-58 cm", weight: "16-32 kg" },
+        { n: "Australian Terrier", l: "A", g: "Terrier", d: "Small rough-coated terrier, spirited and loyal.", life: "12-15 years", height: "25-28 cm", weight: "6 kg" },
+        { n: "Azawakh", l: "A", g: "Sighthound", d: "Elegant Sahelian sighthound, reserved and fast.", life: "12-15 years", height: "64-74 cm", weight: "15-25 kg" },
+        { n: "Basenji", l: "B", g: "Hound", d: "African barkless dog, cat-like and independent.", life: "13-14 years", height: "41-43 cm", weight: "10-12 kg" },
+        { n: "Basset Hound", l: "B", g: "Hound", d: "Low-slung scent hound, calm and devoted tracker.", life: "12-13 years", height: "30-38 cm", weight: "20-29 kg" },
+        { n: "Beagle", l: "B", g: "Hound", d: "Small scent hound, merry and curious hunter.", life: "12-15 years", height: "33-41 cm", weight: "9-11 kg" },
+        { n: "Bearded Collie", l: "B", g: "Herding", d: "Shaggy herding dog, bouncy and affectionate.", life: "12-14 years", height: "51-56 cm", weight: "18-27 kg" },
+        { n: "Bedlington Terrier", l: "B", g: "Terrier", d: "Lamb-like terrier, graceful and spirited.", life: "11-16 years", height: "38-43 cm", weight: "8-10 kg" },
+        { n: "Belgian Malinois", l: "B", g: "Herding", d: "High-drive working dog used in police and military.", life: "12-14 years", height: "56-66 cm", weight: "20-30 kg" },
+        { n: "Belgian Sheepdog", l: "B", g: "Herding", d: "Black-coated herder, alert and loyal worker.", life: "12-14 years", height: "56-66 cm", weight: "20-30 kg" },
+        { n: "Belgian Tervuren", l: "B", g: "Herding", d: "Long-coated Belgian herder, elegant and intense.", life: "12-14 years", height: "56-66 cm", weight: "20-30 kg" },
+        { n: "Bernese Mountain Dog", l: "B", g: "Mountain", d: "Large Swiss farm dog, gentle but short-lived.", life: "7-10 years", height: "58-70 cm", weight: "36-48 kg" },
+        { n: "Bichon Frisé", l: "B", g: "Companion", d: "Small white companion, cheerful and fluffy.", life: "12-15 years", height: "23-30 cm", weight: "5-10 kg" },
+        { n: "Biewer Terrier", l: "B", g: "Toy", d: "Tiny silky terrier, lively and affectionate companion.", life: "15-16 years", height: "20-23 cm", weight: "2-3.5 kg" },
+        { n: "Black Russian Terrier", l: "B", g: "Working", d: "Large black guardian, confident and strong.", life: "10-14 years", height: "66-84 cm", weight: "40-65 kg" },
+        { n: "Bloodhound", l: "B", g: "Hound", d: "Legendary tracking hound with unparalleled nose.", life: "10-12 years", height: "58-69 cm", weight: "36-50 kg" },
+        { n: "Bluetick Coonhound", l: "B", g: "Hound", d: "Speckled coonhound, determined and vocal.", life: "11-12 years", height: "51-69 cm", weight: "20-34 kg" },
+        { n: "Boerboel", l: "B", g: "Mastiff", d: "South African mastiff, strong farm guardian.", life: "9-11 years", height: "56-66 cm", weight: "50-90 kg" },
+        { n: "Border Collie", l: "B", g: "Herding", d: "Extremely intelligent, needs mental stimulation.", life: "12-15 years", height: "46-56 cm", weight: "12-23 kg" },
+        { n: "Border Terrier", l: "B", g: "Terrier", d: "Hardy small terrier, friendly and spirited.", life: "12-15 years", height: "28-33 cm", weight: "5.9-7.1 kg" },
+        { n: "Borzoi", l: "B", g: "Sighthound", d: "Russian wolfhound, elegant and fast.", life: "9-14 years", height: "71-81 cm", weight: "18-41 kg" },
+        { n: "Boston Terrier", l: "B", g: "Companion", d: "Compact American companion, lively and polite.", life: "11-15 years", height: "23-43 cm", weight: "5-11 kg" },
+        { n: "Boxer", l: "B", g: "Working", d: "Playful, energetic guardian with expressive face.", life: "8-10 years", height: "53-63 cm", weight: "25-36 kg" },
+        { n: "Boykin Spaniel", l: "B", g: "Sporting", d: "Compact flushing spaniel, eager and friendly.", life: "12-15 years", height: "38-43 cm", weight: "11-18 kg" },
+        { n: "Bracco Italiano", l: "B", g: "Sporting", d: "Italian pointing dog, noble and gentle.", life: "12-13 years", height: "55-67 cm", weight: "25-40 kg" },
+        { n: "Briard", l: "B", g: "Herding", d: "French herder with long coat, loyal and brave.", life: "12-13 years", height: "58-69 cm", weight: "23-32 kg" },
+        { n: "Brittany Spaniel", l: "B", g: "Sporting", d: "Versatile bird dog, energetic and affectionate.", life: "12-15 years", height: "46-53 cm", weight: "13-18 kg" },
+        { n: "Brussels Griffon", l: "B", g: "Toy", d: "Small toy dog with human-like expression.", life: "12-15 years", height: "18-20 cm", weight: "3.6-6 kg" },
+        { n: "Bull Terrier", l: "B", g: "Terrier", d: "Egg-headed terrier, clownish and strong.", life: "12-13 years", height: "50-70 cm", weight: "24-35 kg" },
+        { n: "Bulldog", l: "B", g: "Companion", d: "Stocky, gentle companion with wrinkled face.", life: "8-12 years", height: "30-40 cm", weight: "18-23 kg" },
+        { n: "Bullmastiff", l: "B", g: "Mastiff", d: "Large guardian, calm and protective family dog.", life: "7-9 years", height: "61-66 cm", weight: "41-59 kg" },
+        { n: "Cairn Terrier", l: "C", g: "Terrier", d: "Small earthdog, spirited and hardy.", life: "13-15 years", height: "24-30 cm", weight: "6 kg" },
+        { n: "Canaan Dog", l: "C", g: "Herding", d: "Israeli pariah-type herder, alert and wary.", life: "12-15 years", height: "48-61 cm", weight: "18-25 kg" },
+        { n: "Cane Corso", l: "C", g: "Molosser", d: "Italian mastiff, powerful and protective.", life: "9-12 years", height: "64-72 cm", weight: "40-50 kg" },
+        { n: "Cardigan Welsh Corgi", l: "C", g: "Herding", d: "Long-bodied herder with tail, loyal and smart.", life: "12-15 years", height: "27-30 cm", weight: "25-34 kg" },
+        { n: "Cavalier King Charles Spaniel", l: "C", g: "Toy", d: "Gentle toy spaniel, affectionate lapdog.", life: "12-15 years", height: "30-35 cm", weight: "5.9-8.2 kg" },
+        { n: "Central Asian Shepherd", l: "C", g: "Guardian", d: "Ancient livestock guardian, independent and tough.", life: "10-14 years", height: "60-78 cm", weight: "35-65 kg" },
+        { n: "Cesky Terrier", l: "C", g: "Terrier", d: "Czech terrier, calmer than many terriers.", life: "12-15 years", height: "25-32 cm", weight: "4-8 kg" },
+        { n: "Chesapeake Bay Retriever", l: "C", g: "Sporting", d: "Strong water retriever, loyal and determined.", life: "10-13 years", height: "53-66 cm", weight: "25-36 kg" },
+        { n: "Chihuahua", l: "C", g: "Toy", d: "Tiny companion, bold and expressive.", life: "12-18 years", height: "15-23 cm", weight: "1.5-3 kg" },
+        { n: "Chinese Crested", l: "C", g: "Toy", d: "Hairless or powderpuff toy, affectionate and quirky.", life: "13-18 years", height: "23-33 cm", weight: "2.3-6 kg" },
+        { n: "Chinese Shar-Pei", l: "C", g: "Companion", d: "Wrinkled dog with blue-black tongue, loyal.", life: "8-12 years", height: "46-51 cm", weight: "18-29 kg" },
+        { n: "Chow Chow", l: "C", g: "Spitz", d: "Lion-like spitz, dignified and aloof.", life: "8-12 years", height: "45-56 cm", weight: "20-32 kg" },
+        { n: "Cocker Spaniel", l: "C", g: "Sporting", d: "Merry spaniel with long ears, affectionate.", life: "12-15 years", height: "34-39 cm", weight: "11-14.5 kg" },
+        { n: "Collie", l: "C", g: "Herding", d: "Graceful herder, loyal and sensitive.", life: "12-14 years", height: "51-61 cm", weight: "18-34 kg" },
+        { n: "Curly-Coated Retriever", l: "C", g: "Sporting", d: "Curly retriever, confident and independent.", life: "12-15 years", height: "63-69 cm", weight: "23-41 kg" },
+        { n: "Dachshund", l: "D", g: "Hound", d: "Long-bodied badger dog, bold and curious.", life: "12-16 years", height: "20-25 cm", weight: "4.5-12 kg" },
+        { n: "Dalmatian", l: "D", g: "Companion", d: "Spotted coach dog, athletic and outgoing.", life: "11-13 years", height: "56-61 cm", weight: "23-32 kg" },
+        { n: "Dandie Dinmont Terrier", l: "D", g: "Terrier", d: "Distinctive topknot terrier, affectionate.", life: "12-15 years", height: "20-28 cm", weight: "8-11 kg" },
+        { n: "Doberman Pinscher", l: "D", g: "Working", d: "Elegant guardian, loyal and powerful.", life: "10-13 years", height: "66-71 cm", weight: "32-45 kg" },
+        { n: "Dogo Argentino", l: "D", g: "Molosser", d: "White big-game hunter, strong and courageous.", life: "9-15 years", height: "60-68 cm", weight: "40-45 kg" },
+        { n: "English Bulldog", l: "E", g: "Companion", d: "Iconic bulldog, gentle and easygoing.", life: "8-12 years", height: "30-40 cm", weight: "18-23 kg" },
+        { n: "English Cocker Spaniel", l: "E", g: "Sporting", d: "Bird dog, merry and affectionate.", life: "12-15 years", height: "38-41 cm", weight: "12.5-15 kg" },
+        { n: "English Foxhound", l: "E", g: "Hound", d: "Pack hound, bred for fox hunting.", life: "11-13 years", height: "58-64 cm", weight: "16-25 kg" },
+        { n: "English Pointer", l: "E", g: "Sporting", d: "Classic pointing dog, athletic and driven.", life: "12-15 years", height: "61-69 cm", weight: "25-34 kg" },
+        { n: "English Setter", l: "E", g: "Sporting", d: "Elegant bird dog, gentle and friendly.", life: "12-14 years", height: "61-69 cm", weight: "23-34 kg" },
+        { n: "English Springer Spaniel", l: "E", g: "Sporting", d: "Energetic flushing spaniel, eager to please.", life: "12-14 years", height: "48-51 cm", weight: "22-25 kg" },
+        { n: "English Toy Spaniel", l: "E", g: "Toy", d: "Small toy spaniel, sweet and gentle.", life: "10-13 years", height: "25-30 cm", weight: "3.6-6.3 kg" },
+        { n: "Entlebucher Mountain Dog", l: "E", g: "Mountain", d: "Smallest Swiss mountain dog, energetic.", life: "11-15 years", height: "40-50 cm", weight: "20-30 kg" },
+        { n: "Eurasier", l: "E", g: "Spitz", d: "Balanced spitz companion, calm and family-oriented.", life: "12-16 years", height: "48-56 cm", weight: "18-32 kg" },
+        { n: "Field Spaniel", l: "F", g: "Sporting", d: "Medium spaniel, gentle and active.", life: "12-13 years", height: "43-46 cm", weight: "18-25 kg" },
+        { n: "Finnish Lapphund", l: "F", g: "Spitz", d: "Reindeer herder, friendly and fluffy.", life: "12-15 years", height: "41-52 cm", weight: "18-24 kg" },
+        { n: "Finnish Spitz", l: "F", g: "Spitz", d: "Fox-like spitz, vocal and lively.", life: "12-15 years", height: "39-50 cm", weight: "7-13 kg" },
+        { n: "Flat-Coated Retriever", l: "F", g: "Sporting", d: "Happy retriever, forever puppy-like.", life: "8-10 years", height: "58-61 cm", weight: "25-36 kg" },
+        { n: "Fox Terrier", l: "F", g: "Terrier", d: "Lively fox-hunting terrier, bold and bright.", life: "12-15 years", height: "39-41 cm", weight: "6.3-8.2 kg" },
+        { n: "French Bulldog", l: "F", g: "Companion", d: "Bat-eared clown, affectionate and charming.", life: "10-14 years", height: "28-30 cm", weight: "9-14 kg" },
+        { n: "German Longhaired Pointer", l: "G", g: "Sporting", d: "German gundog with long coat, versatile.", life: "12-14 years", height: "58-70 cm", weight: "25-34 kg" },
+        { n: "German Pinscher", l: "G", g: "Working", d: "Medium pinscher, alert and energetic.", life: "12-14 years", height: "43-51 cm", weight: "9-14 kg" },
+        { n: "German Shepherd", l: "G", g: "Herding", d: "Famous working dog, intelligent and loyal.", life: "9-13 years", height: "55-65 cm", weight: "22-40 kg" },
+        { n: "German Shorthaired Pointer", l: "G", g: "Sporting", d: "Versatile hunting dog, athletic and eager.", life: "10-12 years", height: "58-64 cm", weight: "25-32 kg" },
+        { n: "German Wirehaired Pointer", l: "G", g: "Sporting", d: "Rugged gundog with harsh coat.", life: "12-14 years", height: "56-67 cm", weight: "20-32 kg" },
+        { n: "Giant Schnauzer", l: "G", g: "Working", d: "Large schnauzer, powerful and protective.", life: "12-15 years", height: "60-70 cm", weight: "32-50 kg" },
+        { n: "Golden Retriever", l: "G", g: "Sporting", d: "Friendly retriever, eager and gentle.", life: "10-12 years", height: "51-61 cm", weight: "25-34 kg" },
+        { n: "Gordon Setter", l: "G", g: "Sporting", d: "Black-and-tan setter, steady and loyal.", life: "12-13 years", height: "62-66 cm", weight: "25-36 kg" },
+        { n: "Great Dane", l: "G", g: "Mastiff", d: "Giant breed, gentle and dignified.", life: "7-10 years", height: "71-86 cm", weight: "54-90 kg" },
+        { n: "Great Pyrenees", l: "G", g: "Guardian", d: "White mountain guardian, calm and majestic.", life: "10-12 years", height: "66-82 cm", weight: "45-90 kg" },
+        { n: "Greater Swiss Mountain Dog", l: "G", g: "Mountain", d: "Large Swiss draft dog, confident and strong.", life: "8-11 years", height: "60-72 cm", weight: "34-50 kg" },
+        { n: "Greyhound", l: "G", g: "Sighthound", d: "Fast sprinter, gentle and quiet at home.", life: "10-14 years", height: "68-76 cm", weight: "27-40 kg" },
+        { n: "Griffon Bruxellois", l: "G", g: "Toy", d: "Small Brussels griffon, intelligent and alert.", life: "12-15 years", height: "18-20 cm", weight: "3.6-6 kg" },
+        { n: "Havanese", l: "H", g: "Toy", d: "Funny velcro dog with silky coat. Life span: 14-16 years.", life: "14-16 years", height: "20-29 cm", weight: "3-6 kg" },
+        { n: "Hovawart", l: "H", g: "Working", d: "Powerful protector, devoted family dog. Life span: 10-14 years.", life: "10-14 years", height: "58-70 cm", weight: "25-44 kg" },
+        { n: "Ibizan Hound", l: "I", g: "Sighthound", d: "Polite, deer-like, and independent. Life span: 12-14 years.", life: "12-14 years", height: "56-72 cm", weight: "19-25 kg" },
+        { n: "Icelandic Sheepdog", l: "I", g: "Spitz", d: "Icelandic herder, cheerful and vocal.", life: "12-14 years", height: "41-51 cm", weight: "14-20 kg" },
+        { n: "Irish Setter", l: "I", g: "Sporting", d: "Red-coated setter, energetic and affectionate.", life: "12-15 years", height: "63-76 cm", weight: "24-32 kg" },
+        { n: "Irish Terrier", l: "I", g: "Terrier", d: "Red terrier, bold and spirited.", life: "13-15 years", height: "43-48 cm", weight: "12.3 kg" },
+        { n: "Irish Water Spaniel", l: "I", g: "Sporting", d: "Curly water spaniel, clownish and smart.", life: "12-13 years", height: "53-61 cm", weight: "20-30 kg" },
+        { n: "Irish Wolfhound", l: "I", g: "Sighthound", d: "One of the tallest breeds, gentle giant.", life: "7-9 years", height: "81-86 cm", weight: "40-70 kg" },
+        { n: "Italian Greyhound", l: "I", g: "Toy", d: "Miniature greyhound, elegant and sensitive.", life: "12-16 years", height: "33-38 cm", weight: "3.6 kg" },
+        { n: "Jack Russell Terrier", l: "J", g: "Terrier", d: "High-energy terrier, fearless and lively.", life: "13-16 years", height: "25-38 cm", weight: "4-8 kg" },
+        { n: "Japanese Chin", l: "J", g: "Toy", d: "Small companion, cat-like and charming.", life: "12-15 years", height: "20-28 cm", weight: "2-4 kg" },
+        { n: "Japanese Spitz", l: "J", g: "Spitz", d: "White fluffy spitz, friendly and alert.", life: "12-16 years", height: "30-38 cm", weight: "5-10 kg" },
+        { n: "Japanese Terrier", l: "J", g: "Terrier", d: "Small Japanese terrier, lively and affectionate.", life: "12-15 years", height: "28-33 cm", weight: "2-4 kg" },
+        { n: "Jindo", l: "J", g: "Spitz", d: "Korean spitz, loyal and independent.", life: "12-18 years", height: "45-55 cm", weight: "16-22 kg" },
+        { n: "Kai Ken", l: "K", g: "Spitz", d: "Brindle Japanese spitz, agile hunter.", life: "12-16 years", height: "43-54 cm", weight: "16-22 kg" },
+        { n: "Kangal", l: "K", g: "Guardian", d: "Turkish guardian, powerful and calm.", life: "12-15 years", height: "71-81 cm", weight: "27-59 kg" },
+        { n: "Karelian Bear Dog", l: "K", g: "Spitz", d: "Finnish hunting dog, brave and intense.", life: "10-14 years", height: "47-60 cm", weight: "17-30 kg" },
+        { n: "Keeshond", l: "K", g: "Spitz", d: "Dutch barge dog, friendly and alert.", life: "12-15 years", height: "43-48 cm", weight: "15-20 kg" },
+        { n: "Kerry Blue Terrier", l: "K", g: "Terrier", d: "Blue-coated terrier, spirited and loyal.", life: "12-15 years", height: "43-48 cm", weight: "15-20 kg" },
+        { n: "Komondor", l: "K", g: "Guardian", d: "Hungarian guardian with corded coat.", life: "10-12 years", height: "64-80 cm", weight: "36-60 kg" },
+        { n: "Kuvasz", l: "K", g: "Guardian", d: "Hungarian white guardian, independent and loyal.", life: "10-12 years", height: "66-76 cm", weight: "27-52 kg" },
+        { n: "Labradoodle", l: "L", g: "Designer", d: "Labrador-Poodle mix, friendly and active.", life: "12-15 years", height: "54-63 cm", weight: "23-30 kg" },
+        { n: "Labrador Retriever", l: "L", g: "Sporting", d: "Popular retriever, outgoing and eager.", life: "10-14 years", height: "54-62 cm", weight: "25-36 kg" },
+        { n: "Lakeland Terrier", l: "L", g: "Terrier", d: "Small terrier, bold and confident.", life: "12-16 years", height: "35-38 cm", weight: "6.5-8.2 kg" },
+        { n: "Lhasa Apso", l: "L", g: "Companion", d: "Tibetan lapdog, confident and watchful.", life: "12-15 years", height: "25-28 cm", weight: "4.1-8.2 kg" },
+        { n: "Maltese", l: "M", g: "Companion", d: "Tiny white lapdog, gentle and playful.", life: "12-15 years", height: "20-25 cm", weight: "3-4 kg" },
+        { n: "Manchester Terrier", l: "M", g: "Terrier", d: "Sleek ratting terrier, alert and loyal.", life: "15-17 years", height: "38-41 cm", weight: "5-12 kg" },
+        { n: "Mastiff", l: "M", g: "Mastiff", d: "Massive guardian, calm and dignified.", life: "6-10 years", height: "70-76 cm", weight: "54-100 kg" },
+        { n: "Miniature Pinscher", l: "M", g: "Toy", d: "Tiny pinscher, fearless and lively.", life: "12-16 years", height: "25-30 cm", weight: "3.5-5 kg" },
+        { n: "Miniature Schnauzer", l: "M", g: "Terrier", d: "Bearded terrier, alert and friendly.", life: "12-16 years", height: "30-35 cm", weight: "4.5-8.2 kg" },
+        { n: "Mudi", l: "M", g: "Herding", d: "Hungarian herder, agile and energetic.", life: "12-14 years", height: "36-47 cm", weight: "7-13 kg" },
+        { n: "Neapolitan Mastiff", l: "N", g: "Mastiff", d: "Wrinkled Italian mastiff, imposing guardian.", life: "7-9 years", height: "60-77 cm", weight: "50-70 kg" },
+        { n: "Newfoundland", l: "N", g: "Working", d: "Massive water rescue dog, gentle and sweet.", life: "9-10 years", height: "66-71 cm", weight: "50-68 kg" },
+        { n: "Norfolk Terrier", l: "N", g: "Terrier", d: "Small drop-eared terrier, friendly and bold.", life: "12-15 years", height: "25-28 cm", weight: "5-5.4 kg" },
+        { n: "Norwegian Buhund", l: "N", g: "Spitz", d: "Norwegian farm spitz, active and cheerful.", life: "12-15 years", height: "41-47 cm", weight: "12-18 kg" },
+        { n: "Norwegian Elkhound", l: "N", g: "Spitz", d: "Moose-hunting spitz, sturdy and loyal.", life: "12-15 years", height: "45-52 cm", weight: "18-24 kg" },
+        { n: "Norwegian Lundehund", l: "N", g: "Spitz", d: "Unique puffin dog with extra toes.", life: "12-15 years", height: "32-38 cm", weight: "5-9 kg" },
+        { n: "Norwich Terrier", l: "N", g: "Terrier", d: "Tiny prick-eared terrier, fearless and friendly.", life: "12-16 years", height: "25-28 cm", weight: "5-5.4 kg" },
+        { n: "Old English Sheepdog", l: "O", g: "Herding", d: "Shaggy herder, clownish and loving.", life: "10-12 years", height: "56 cm", weight: "27-45 kg" },
+        { n: "Otterhound", l: "O", g: "Hound", d: "Large rough-coated hound, bred for otter hunting.", life: "10-15 years", height: "61-69 cm", weight: "30-55 kg" },
+        { n: "Papillon", l: "P", g: "Toy", d: "Butterfly-eared toy dog, bright and friendly.", life: "13-16 years", height: "20-28 cm", weight: "3.6-5 kg" },
+        { n: "Parson Russell Terrier", l: "P", g: "Terrier", d: "Fox-hunting terrier, energetic and bold.", life: "13-15 years", height: "33-38 cm", weight: "6.3-8.2 kg" },
+        { n: "Pekingese", l: "P", g: "Toy", d: "Lion-like toy dog, dignified and loyal.", life: "12-15 years", height: "15-23 cm", weight: "3.6-6.3 kg" },
+        { n: "Pembroke Welsh Corgi", l: "P", g: "Herding", d: "Short herder, outgoing and smart.", life: "12-13 years", height: "25-30 cm", weight: "24-30 kg" },
+        { n: "Pomeranian", l: "P", g: "Toy", d: "Tiny spitz, bold and fluffy.", life: "12-16 years", height: "20-30 cm", weight: "1.4-3.2 kg" },
+        { n: "Poodle", l: "P", g: "Companion", d: "Intelligent curly-coated dog, comes in sizes.", life: "12-15 years", height: "25-60 cm", weight: "3-32 kg" },
+        { n: "Portuguese Water Dog", l: "P", g: "Working", d: "Curly water dog, energetic and loyal.", life: "12-15 years", height: "43-58 cm", weight: "16-27 kg" },
+        { n: "Pug", l: "P", g: "Companion", d: "Wrinkled toy dog, charming and comical.", life: "12-15 years", height: "25-30 cm", weight: "6-8 kg" },
+        { n: "Puli", l: "P", g: "Herding", d: "Hungarian herder with corded coat.", life: "10-15 years", height: "41-48 cm", weight: "11-16 kg" },
+        { n: "Pyrenean Shepherd", l: "P", g: "Herding", d: "Small French herder, intense and agile.", life: "15-18 years", height: "38-51 cm", weight: "7-15 kg" },
+        { n: "Rat Terrier", l: "R", g: "Terrier", d: "American farm terrier, lively and smart.", life: "15-18 years", height: "25-46 cm", weight: "4-8 kg" },
+        { n: "Redbone Coonhound", l: "R", g: "Hound", d: "Red coonhound, mellow at home but driven on trail.", life: "12-13 years", height: "51-69 cm", weight: "20-32 kg" },
+        { n: "Rhodesian Ridgeback", l: "R", g: "Hound", d: "African lion dog, strong and dignified.", life: "10-14 years", height: "63-69 cm", weight: "29-36 kg" },
+        { n: "Rottweiler", l: "R", g: "Working", d: "Powerful guardian, confident and loyal.", life: "8-11 years", height: "56-69 cm", weight: "34-59 kg" },
+        { n: "Russian Toy", l: "R", g: "Toy", d: "Tiny toy with long feathered ears.", life: "12-14 years", height: "20-28 cm", weight: "3-6 kg" },
+        { n: "Saint Bernard", l: "S", g: "Mountain", d: "Giant Swiss rescue dog, gentle and kind.", life: "8-10 years", height: "70 cm", weight: "54-91 kg" },
+        { n: "Saluki", l: "S", g: "Sighthound", d: "Ancient desert sighthound, graceful and reserved.", life: "12-14 years", height: "58-71 cm", weight: "16-30 kg" },
+        { n: "Samoyed", l: "S", g: "Spitz", d: "Smiling white spitz, friendly and fluffy.", life: "12-14 years", height: "48-60 cm", weight: "16-30 kg" },
+        { n: "Schipperke", l: "S", g: "Spitz", d: "Little black watchdog, curious and bold.", life: "12-16 years", height: "28-33 cm", weight: "3-9 kg" },
+        { n: "Scottish Deerhound", l: "S", g: "Sighthound", d: "Tall rough-coated hound, gentle and dignified.", life: "10-13 years", height: "71-76 cm", weight: "36-45 kg" },
+        { n: "Scottish Terrier", l: "S", g: "Terrier", d: "Short-legged terrier, independent and brave.", life: "12-15 years", height: "25-28 cm", weight: "8.6-10.3 kg" },
+        { n: "Sealyham Terrier", l: "S", g: "Terrier", d: "White terrier, charming and bold.", life: "12-14 years", height: "25-30 cm", weight: "7.3-10.9 kg" },
+        { n: "Shetland Sheepdog", l: "S", g: "Herding", d: "Miniature collie-type, sensitive and bright.", life: "12-14 years", height: "33-41 cm", weight: "6.8-7.3 kg" },
+        { n: "Shiba Inu", l: "S", g: "Spitz", d: "Japanese spitz, bold and independent.", life: "12-16 years", height: "33-43 cm", weight: "6-10 kg" },
+        { n: "Shih Tzu", l: "S", g: "Companion", d: "Tibetan lapdog, sweet and outgoing.", life: "10-18 years", height: "20-28 cm", weight: "4-7.5 kg" },
+        { n: "Siberian Husky", l: "S", g: "Working", d: "Medium sled dog, energetic and social.", life: "12-14 years", height: "51-60 cm", weight: "16-27 kg" },
+        { n: "Silky Terrier", l: "S", g: "Toy", d: "Silky-coated toy terrier, lively and alert.", life: "13-16 years", height: "23-25 cm", weight: "3.5-4.5 kg" },
+        { n: "Skye Terrier", l: "S", g: "Terrier", d: "Long-bodied terrier, dignified and loyal.", life: "12-15 years", height: "25-26 cm", weight: "11.3-12.3 kg" },
+        { n: "Sloughi", l: "S", g: "Sighthound", d: "North African sighthound, sensitive and reserved.", life: "10-15 years", height: "61-72 cm", weight: "16-27 kg" },
+        { n: "Smooth Fox Terrier", l: "S", g: "Terrier", d: "Smooth-coated fox terrier, bold and lively.", life: "12-15 years", height: "36-41 cm", weight: "6.3-8.2 kg" },
+        { n: "Soft Coated Wheaten Terrier", l: "S", g: "Terrier", d: "Soft-coated terrier, happy and friendly.", life: "12-14 years", height: "43-48 cm", weight: "13.6-20 kg" },
+        { n: "Spanish Water Dog", l: "S", g: "Sporting", d: "Curly-coated water dog, versatile worker.", life: "12-14 years", height: "38-50 cm", weight: "14-22 kg" },
+        { n: "Spinone Italiano", l: "S", g: "Sporting", d: "Italian gundog, gentle and sturdy.", life: "12-13 years", height: "58-70 cm", weight: "27-36 kg" },
+        { n: "Staffordshire Bull Terrier", l: "S", g: "Terrier", d: "Stocky terrier, people-loving and brave.", life: "12-14 years", height: "35-40 cm", weight: "11-17 kg" },
+        { n: "Standard Schnauzer", l: "S", g: "Working", d: "Medium schnauzer, alert and robust.", life: "13-16 years", height: "45-50 cm", weight: "11-20 kg" },
+        { n: "Sussex Spaniel", l: "S", g: "Sporting", d: "Low, long spaniel, calm and gentle.", life: "13-15 years", height: "38-41 cm", weight: "18-20 kg" },
+        { n: "Swedish Vallhund", l: "S", g: "Herding", d: "Short-legged Viking herder, energetic and vocal.", life: "12-15 years", height: "30-35 cm", weight: "6.5-9 kg" },
+        { n: "Tibetan Mastiff", l: "T", g: "Guardian", d: "Ancient guardian, massive and independent.", life: "10-14 years", height: "61-71 cm", weight: "34-82 kg" },
+        { n: "Tibetan Spaniel", l: "T", g: "Companion", d: "Small Tibetan companion, alert and loving.", life: "12-15 years", height: "25-28 cm", weight: "4.1-6.8 kg" },
+        { n: "Tibetan Terrier", l: "T", g: "Companion", d: "Medium shaggy dog, cheerful and loyal.", life: "12-15 years", height: "35-41 cm", weight: "8.6-13.6 kg" },
+        { n: "Toy Fox Terrier", l: "T", g: "Toy", d: "Tiny terrier, lively and clever.", life: "13-14.5 years", height: "20-29 cm", weight: "1.5-3.1 kg" },
+        { n: "Treeing Walker Coonhound", l: "T", g: "Hound", d: "Fast coonhound, driven and vocal.", life: "12-13 years", height: "51-69 cm", weight: "20-27 kg" },
+        { n: "Vizsla", l: "V", g: "Sporting", d: "Hungarian pointer, affectionate and active.", life: "12-15 years", height: "53-64 cm", weight: "18-30 kg" },
+        { n: "Weimaraner", l: "W", g: "Sporting", d: "Gray ghost gundog, energetic and loyal.", life: "10-13 years", height: "56-69 cm", weight: "23-40 kg" },
+        { n: "Welsh Springer Spaniel", l: "W", g: "Sporting", d: "Red-and-white spaniel, devoted and active.", life: "12-15 years", height: "43-48 cm", weight: "16-20 kg" },
+        { n: "Welsh Terrier", l: "W", g: "Terrier", d: "Welsh earthdog, spirited and friendly.", life: "12-15 years", height: "38-39 cm", weight: "9.1 kg" },
+        { n: "West Highland White Terrier", l: "W", g: "Terrier", d: "White terrier, bold and cheerful.", life: "12-14 years", height: "25-28 cm", weight: "6.4-7 kg" },
+        { n: "Whippet", l: "W", g: "Sighthound", d: "Medium sprinter, gentle and quiet.", life: "12-15 years", height: "44-56 cm", weight: "12.7-13.6 kg" },
+        { n: "Wirehaired Pointing Griffon", l: "W", g: "Sporting", d: "Rough-coated gundog, devoted and eager.", life: "12-14 years", height: "50-60 cm", weight: "18-27 kg" },
+        { n: "Xoloitzcuintli", l: "X", g: "Primitive", d: "Mexican hairless dog, calm and loyal.", life: "13-18 years", height: "25-61 cm", weight: "2-27 kg" },
+        { n: "Yorkshire Terrier", l: "Y", g: "Toy", d: "Silky-coated toy terrier, lively and fearless.", life: "13-16 years", height: "20-23 cm", weight: "2.7-3.6 kg" },
+        { n: "Aidi", l: "A", g: "Guardian", d: "Moroccan livestock guardian, alert and protective.", life: "10-12 years", height: "52-62 cm", weight: "20-30 kg" },
+        { n: "Ainu Dog", l: "A", g: "Spitz", d: "Japanese hunting spitz, brave and loyal.", life: "11-15 years", height: "45-52 cm", weight: "17-26 kg" },
+        { n: "Airedale Terrier", l: "A", g: "Terrier", d: "Largest terrier, energetic and versatile working dog.", life: "11-14 years", height: "56-64 cm", weight: "20-29 kg" },
+        { n: "Akbash", l: "A", g: "Guardian", d: "Turkish white guardian dog, calm and watchful.", life: "10-12 years", height: "71-86 cm", weight: "36-64 kg" },
+        { n: "Akita", l: "A", g: "Working", d: "Powerful Japanese breed, dignified and loyal.", life: "10-14 years", height: "61-71 cm", weight: "34-59 kg" },
+        { n: "Alaskan Malamute", l: "A", g: "Working", d: "Strong Arctic sled dog, friendly and powerful.", life: "10-14 years", height: "58-71 cm", weight: "34-54 kg" },
+        { n: "American Bulldog", l: "A", g: "Working", d: "Athletic bulldog, confident and protective.", life: "10-16 years", height: "51-66 cm", weight: "27-54 kg" },
+        { n: "American Cocker Spaniel", l: "A", g: "Sporting", d: "Small gundog with long ears, cheerful and gentle.", life: "12-15 years", height: "36-39 cm", weight: "11-13 kg" },
+        { n: "American Foxhound", l: "A", g: "Medium Scenthound", d: "Cheerful scent hound. Highly social and pack-oriented with strong hunting drive. Life span: 12-15 years.", life: "12-15 years", height: "53-64 cm", weight: "20-30 kg" },
+        { n: "Australian Cattle Dog", l: "A", g: "Herding", d: "Heeler breed, tough and highly active with strong herding instinct.", life: "12-16 years", height: "43-51 cm", weight: "14-20 kg" },
+        { n: "Australian Shepherd", l: "A", g: "Herding", d: "Smart herding breed, very trainable and energetic.", life: "13-15 years", height: "46-58 cm", weight: "16-32 kg" },
+        { n: "Basenji", l: "B", g: "Hound", d: "African barkless dog, cat-like and independent.", life: "13-14 years", height: "41-43 cm", weight: "10-12 kg" },
+        { n: "Basset Hound", l: "B", g: "Hound", d: "Low-slung scent hound, calm and devoted with amazing nose.", life: "12-13 years", height: "30-38 cm", weight: "20-29 kg" },
+        { n: "Beagle", l: "B", g: "Hound", d: "Small scent hound, merry and curious with strong tracking instinct.", life: "12-15 years", height: "33-41 cm", weight: "9-11 kg" },
+        { n: "Belgian Malinois", l: "B", g: "Herding", d: "High-drive working dog, often used in police and military work.", life: "12-14 years", height: "56-66 cm", weight: "20-30 kg" },
+        { n: "Bernese Mountain Dog", l: "B", g: "Mountain", d: "Large Swiss farm dog, gentle and affectionate but short-lived.", life: "7-10 years", height: "58-70 cm", weight: "36-48 kg" },
+        { n: "Bichon Frisé", l: "B", g: "Companion", d: "Small white companion, cheerful and fluffy lapdog.", life: "12-15 years", height: "23-30 cm", weight: "5-10 kg" },
+        { n: "Black Russian Terrier", l: "B", g: "Working", d: "Large black guardian, confident and strong protector.", life: "10-14 years", height: "66-84 cm", weight: "40-65 kg" },
+        { n: "Bloodhound", l: "B", g: "Hound", d: "Legendary tracking hound with unparalleled scenting ability.", life: "10-12 years", height: "58-69 cm", weight: "36-50 kg" },
+        { n: "Border Collie", l: "B", g: "Herding", d: "Extremely intelligent herding dog, needs mental stimulation and work.", life: "12-15 years", height: "46-56 cm", weight: "12-23 kg" },
+        { n: "Boxer", l: "B", g: "Working", d: "Playful, energetic guardian with expressive and friendly face.", life: "8-10 years", height: "53-63 cm", weight: "25-36 kg" },
+        { n: "Bulldog", l: "B", g: "Companion", d: "Stocky, gentle companion with distinctive wrinkled face.", life: "8-12 years", height: "30-40 cm", weight: "18-23 kg" },
+        { n: "Bullmastiff", l: "B", g: "Mastiff", d: "Large guardian, calm and protective family dog.", life: "7-9 years", height: "61-66 cm", weight: "41-59 kg" },
+        { n: "Cairn Terrier", l: "C", g: "Terrier", d: "Small earthdog, spirited and hardy working terrier.", life: "13-15 years", height: "24-30 cm", weight: "6 kg" },
+        { n: "Cane Corso", l: "C", g: "Molosser", d: "Italian mastiff, powerful and protective family dog.", life: "9-12 years", height: "64-72 cm", weight: "40-50 kg" },
+        { n: "Cavalier King Charles Spaniel", l: "C", g: "Toy", d: "Gentle toy spaniel, affectionate and loving lapdog.", life: "12-15 years", height: "30-35 cm", weight: "5.9-8.2 kg" },
+        { n: "Chihuahua", l: "C", g: "Toy", d: "Tiny companion, bold and expressive for its size.", life: "12-18 years", height: "15-23 cm", weight: "1.5-3 kg" },
+        { n: "Chow Chow", l: "C", g: "Spitz", d: "Lion-like spitz, dignified and aloof with unique traits.", life: "8-12 years", height: "45-56 cm", weight: "20-32 kg" },
+        { n: "Cocker Spaniel", l: "C", g: "Sporting", d: "Merry spaniel with long ears, affectionate and eager.", life: "12-15 years", height: "34-39 cm", weight: "11-14.5 kg" },
+        { n: "Collie", l: "C", g: "Herding", d: "Graceful herder, loyal and sensitive to family emotions.", life: "12-14 years", height: "51-61 cm", weight: "18-34 kg" },
+        { n: "Dachshund", l: "D", g: "Hound", d: "Long-bodied badger dog, bold and curious hunter.", life: "12-16 years", height: "20-25 cm", weight: "4.5-12 kg" },
+        { n: "Dalmatian", l: "D", g: "Companion", d: "Spotted coach dog, athletic and outgoing companion.", life: "11-13 years", height: "56-61 cm", weight: "23-32 kg" },
+        { n: "Doberman Pinscher", l: "D", g: "Working", d: "Elegant guardian, loyal and powerful working dog.", life: "10-13 years", height: "66-71 cm", weight: "32-45 kg" },
+        { n: "English Bulldog", l: "E", g: "Companion", d: "Iconic bulldog, gentle and easygoing family dog.", life: "8-12 years", height: "30-40 cm", weight: "18-23 kg" },
+        { n: "English Setter", l: "E", g: "Sporting", d: "Elegant bird dog, gentle and friendly gun dog.", life: "12-14 years", height: "61-69 cm", weight: "23-34 kg" },
+        { n: "French Bulldog", l: "F", g: "Companion", d: "Bat-eared clown, affectionate and charming companion.", life: "10-14 years", height: "28-30 cm", weight: "9-14 kg" },
+        { n: "German Shepherd Dog", l: "G", g: "Herding", d: "Famous working dog, intelligent and loyal protector.", life: "9-13 years", height: "55-65 cm", weight: "22-40 kg" },
+        { n: "Golden Retriever", l: "G", g: "Sporting", d: "Friendly retriever, eager and gentle family dog.", life: "10-12 years", height: "51-61 cm", weight: "25-34 kg" },
+        { n: "Great Dane", l: "G", g: "Mastiff", d: "Giant breed, gentle and dignified despite size.", life: "7-10 years", height: "71-86 cm", weight: "54-90 kg" },
+        { n: "Great Pyrenees", l: "G", g: "Guardian", d: "White mountain guardian, calm and majestic protector.", life: "10-12 years", height: "66-82 cm", weight: "45-90 kg" },
+        { n: "Greyhound", l: "G", g: "Sighthound", d: "Fast sprinter, gentle and quiet at home companion.", life: "10-14 years", height: "68-76 cm", weight: "27-40 kg" },
+        { n: "Havanese", l: "H", g: "Toy", d: "Funny and outgoing velcro dog with silky coat. Highly affectionate. Life span: 14-16 years.", life: "14-16 years", height: "20-29 cm", weight: "3-6 kg" },
+        { n: "Ibizan Hound", l: "I", g: "Sighthound", d: "Polite, deer-like, and independent hunter. High jumping ability. Life span: 12-14 years.", life: "12-14 years", height: "56-72 cm", weight: "19-25 kg" },
+        { n: "Irish Setter", l: "I", g: "Sporting", d: "Red-coated setter, energetic and affectionate gun dog.", life: "12-15 years", height: "63-76 cm", weight: "24-32 kg" },
+        { n: "Jack Russell Terrier", l: "J", g: "Terrier", d: "High-energy terrier, fearless and lively hunter.", life: "13-16 years", height: "25-38 cm", weight: "4-8 kg" },
+        { n: "Kangal", l: "K", g: "Guardian", d: "Turkish guardian, powerful and calm protector.", life: "12-15 years", height: "71-81 cm", weight: "27-59 kg" },
+        { n: "Labrador Retriever", l: "L", g: "Sporting", d: "Popular retriever, outgoing and eager family dog.", life: "10-14 years", height: "54-62 cm", weight: "25-36 kg" },
+        { n: "Lhasa Apso", l: "L", g: "Companion", d: "Tibetan lapdog, confident and watchful companion.", life: "12-15 years", height: "25-28 cm", weight: "4.1-8.2 kg" },
+        { n: "Maltese", l: "M", g: "Companion", d: "Tiny white lapdog, gentle and playful companion.", life: "12-15 years", height: "20-25 cm", weight: "3-4 kg" },
+        { n: "Mastiff", l: "M", g: "Mastiff", d: "Massive guardian, calm and dignified protector.", life: "6-10 years", height: "70-76 cm", weight: "54-100 kg" },
+        { n: "Newfoundland", l: "N", g: "Working", d: "Massive water rescue dog, gentle and sweet nature.", life: "9-10 years", height: "66-71 cm", weight: "50-68 kg" },
+        { n: "Pomeranian", l: "P", g: "Toy", d: "Tiny spitz, bold and fluffy for its size.", life: "12-16 years", height: "20-30 cm", weight: "1.4-3.2 kg" },
+        { n: "Poodle", l: "P", g: "Companion", d: "Intelligent curly-coated dog, comes in three sizes.", life: "12-15 years", height: "25-60 cm", weight: "3-32 kg" },
+        { n: "Pug", l: "P", g: "Companion", d: "Wrinkled toy dog, charming and comical companion.", life: "12-15 years", height: "25-30 cm", weight: "6-8 kg" },
+        { n: "Rottweiler", l: "R", g: "Working", d: "Powerful guardian, confident and loyal protector.", life: "8-11 years", height: "56-69 cm", weight: "34-59 kg" },
+        { n: "Shiba Inu", l: "S", g: "Spitz", d: "Japanese spitz, bold and independent companion.", life: "12-16 years", height: "33-43 cm", weight: "6-10 kg" },
+        { n: "Shih Tzu", l: "S", g: "Companion", d: "Tibetan lapdog, sweet and outgoing companion.", life: "10-18 years", height: "20-28 cm", weight: "4-7.5 kg" },
+        { n: "Siberian Husky", l: "S", g: "Working", d: "Medium sled dog, energetic and social pack animal.", life: "12-14 years", height: "51-60 cm", weight: "16-27 kg" },
+        { n: "Tibetan Mastiff", l: "T", g: "Guardian", d: "Ancient guardian, massive and independent protector.", life: "10-14 years", height: "61-71 cm", weight: "34-82 kg" },
+        { n: "Vizsla", l: "V", g: "Sporting", d: "Hungarian pointer, affectionate and active hunter.", life: "12-15 years", height: "53-64 cm", weight: "18-30 kg" },
+        { n: "Weimaraner", l: "W", g: "Sporting", d: "Gray ghost gundog, energetic and loyal companion.", life: "10-13 years", height: "56-69 cm", weight: "23-40 kg" },
+        { n: "West Highland White Terrier", l: "W", g: "Terrier", d: "White terrier, bold and cheerful working dog.", life: "12-14 years", height: "25-28 cm", weight: "6.4-7 kg" },
+        { n: "Yorkshire Terrier", l: "Y", g: "Toy", d: "Silky-coated toy terrier, lively and fearless.", life: "13-16 years", height: "20-23 cm", weight: "2.7-3.6 kg" }
+];
+
+const grid = document.getElementById("grid");
+const searchInput = document.getElementById("searchInput");
+const clearBtn = document.getElementById("clearBtn");
+const lettersContainer = document.getElementById("letters");
+let activeLetter = null;
+
+// 2. LOCALSTORAGE IMAGE CACHING
+function getCachedImage(breedName) {
+    return localStorage.getItem(`dog_image_${breedName}`);
+}
+
+function setCachedImage(breedName, imageUrl) {
+    try {
+        localStorage.setItem(`dog_image_${breedName}`, imageUrl);
+    } catch (e) {
+        console.log("LocalStorage full or disabled");
+    }
+}
+
+// 3. THE DYNAMIC IMAGE FETCHER
+async function getDogImage(breedName) {
+    // Check cache first
+    const cached = getCachedImage(breedName);
+    if (cached) return cached;
+
+    try {
+        // Convert "Golden Retriever" to "retriever/golden" for the API
+        const queryName = breedName.toLowerCase().split(' ').reverse().join('/');
+        const response = await fetch(`https://dog.ceo/api/breed/${queryName}/images/random`);
+        const data = await response.json();
+
+        if (data.status === "success") {
+            setCachedImage(breedName, data.message);
+            return data.message;
+        } else {
+            // Fallback: If specific breed isn't in API, get any random dog
+            const fallback = await fetch('https://dog.ceo/api/breeds/image/random');
+            const fallbackData = await fallback.json();
+            if (fallbackData.status === "success") {
+                setCachedImage(breedName, fallbackData.message);
+                return fallbackData.message;
+            }
+        }
+    } catch (err) {
+        const fallbackUrl = "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=320&h=220";
+        setCachedImage(breedName, fallbackUrl);
+        return fallbackUrl;
+    }
+}
+
+// 4. CARD GENERATOR
+async function makeCard(b) {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    // Check if we have a cached image
+    const cachedImage = getCachedImage(b.n);
+    const imgUrl = cachedImage || "https://via.placeholder.com/320x220?text=Loading...";
+
+    // We start with a loading placeholder or cached image
+    card.innerHTML = `
+<div class="card-face card-front">
+    <div class="badge">${b.l}</div>
+    <img src="${imgUrl}" alt="${b.n}" loading="lazy">
+    <div class="card-body">
+        <div class="card-title">${b.n}</div>
+        <div class="card-meta">${b.g}</div>
+        <div class="card-details">
+            <div class="card-details-item"><span class="card-details-label">Lifespan:</span> ${b.life}</div>
+            <div class="card-details-item"><span class="card-details-label">Height:</span> ${b.height}</div>
+            <div class="card-details-item"><span class="card-details-label">Weight:</span> ${b.weight}</div>
+        </div>
+        <div class="card-desc">${b.d}</div>
+    </div>
+</div>
+`;
+
+    grid.appendChild(card);
+
+    // Now, fetch the real image if not cached and update the card silently
+    if (!cachedImage) {
+        const realImgUrl = await getDogImage(b.n);
+        const imgElement = card.querySelector('img');
+        if (imgElement) imgElement.src = realImgUrl;
+    }
+
+    return card;
+}
+
+// 5. RENDERING ENGINE
+function render(list) {
+    grid.innerHTML = "";
+    if (list.length === 0) {
+        grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color:#777;">No breeds found.</p>';
+        return;
+    }
+    list.forEach(b => makeCard(b));
+}
+
+function filterAndRender(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+        render(breeds);
+        return;
+    }
+    const filtered = breeds.filter(b =>
+        b.n.toLowerCase().includes(q) ||
+        b.l.toLowerCase() === q ||
+        b.g.toLowerCase().includes(q) ||
+        b.d.toLowerCase().includes(q)
+    );
+    render(filtered);
+}
+
+function renderLetters() {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    lettersContainer.innerHTML = "";
+    alphabet.forEach(letter => {
+        const chip = document.createElement("button");
+        chip.className = "letter-chip";
+        chip.textContent = letter;
+        chip.addEventListener("click", () => {
+            if (activeLetter === letter) {
+                activeLetter = null;
+                chip.classList.remove("active");
+                searchInput.value = "";
+                render(breeds);
+            } else {
+                activeLetter = letter;
+                Array.from(lettersContainer.children).forEach(c => c.classList.remove("active"));
+                chip.classList.add("active");
+                searchInput.value = "";
+                const filtered = breeds.filter(b => b.l === letter);
+                render(filtered);
+            }
+        });
+        lettersContainer.appendChild(chip);
+    });
+}
+
+// Event listeners
+searchInput.addEventListener("input", () => {
+    activeLetter = null;
+    Array.from(lettersContainer.children).forEach(c => c.classList.remove("active"));
+    filterAndRender(searchInput.value);
+});
+
+clearBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    activeLetter = null;
+    Array.from(lettersContainer.children).forEach(c => c.classList.remove("active"));
+    render(breeds);
+});
+
+// Initialize
+renderLetters();
+render(breeds);
+</script>
+</body>
+
+</html>

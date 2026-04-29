@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Most Expensive Dog Breeds</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#fff7f0,#e8f0ff);
+  display:flex;
+  justify-content:center;
+  padding:20px;
+  cursor:url("https://cur.cursors-4u.net/animals/ani-12/ani1150.png"),auto;
+}
+.wrapper{width:100%;max-width:1200px;}
+header{text-align:center;margin-bottom:20px;}
+h1{font-size:2.2rem;text-transform:uppercase;letter-spacing:2px;}
+header p{margin-top:6px;color:#555;}
+.search-row{margin:20px auto;max-width:600px;display:flex;gap:10px;}
+.search-row input{flex:1;padding:10px 14px;border-radius:999px;border:1px solid #ccc;}
+.search-row input:focus{border-color:#ff8a5c;box-shadow:0 0 0 3px rgba(255,138,92,.25);}
+.search-row button{padding:10px 18px;border-radius:999px;border:none;background:#ff8a5c;color:#fff;font-weight:600;cursor:pointer;}
+.search-row button:hover{background:#ff6a3a;}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:20px;
+  justify-content:center;
+}
+.card{
+  background:#fff;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 8px 18px rgba(0,0,0,.08);
+  transition:.2s;
+  width:100%;
+  max-width:360px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+}
+.card:hover{transform:translateY(-5px);box-shadow:0 12px 24px rgba(0,0,0,.15);}
+.card-img-wrap{width:100%;height:200px;overflow:hidden;background:#f0f0f0;}
+.card img{width:100%;height:100%;object-fit:cover;display:block;}
+.card-body{padding:14px;flex:1;display:flex;flex-direction:column;}
+.card-title{font-weight:700;font-size:1.1rem;margin-bottom:4px;color:#222;}
+.card-price{font-size:1rem;font-weight:700;color:#ff6a3a;margin-bottom:10px;}
+.card-meta{font-size:0.8rem;color:#555;margin-bottom:8px;line-height:1.4;}
+.card-meta strong{color:#ff8a5c;}
+.card-desc{font-size:0.82rem;color:#444;line-height:1.45;margin-bottom:10px;}
+.medicine-box{
+  background:#fff5f0;
+  border-left:4px solid #ff8a5c;
+  padding:10px 12px;
+  border-radius:0 8px 8px 0;
+  margin-top:auto;
+}
+.medicine-box h4{font-size:0.8rem;color:#ff6a3a;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;}
+.medicine-box p{font-size:0.78rem;color:#555;line-height:1.4;}
+.footer{text-align:center;font-size:0.8rem;color:#777;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <header>
+    <h1>Most Expensive Dog Breeds</h1>
+    <p>Explore rare and costly breeds with detailed health & care info.</p>
+  </header>
+
+  <div class="search-row">
+    <input id="searchInput" type="text" placeholder="Search by breed name...">
+    <button id="clearBtn">Clear</button>
+  </div>
+
+  <div id="grid" class="grid"></div>
+
+  <div class="footer">Images cached locally after first load.</div>
+
+<script>
+const breeds = [
+  {
+    n:"Tibetan Mastiff",
+    g:"Working",
+    sp:"Ancient guardian of the Himalayas; fiercely loyal to family, aloof with strangers.",
+    h:"24–26 inches",
+    w:"70–150 lbs",
+    l:"10–14 years",
+    d:"Known for its massive size and lion-like mane, it is the most expensive, often selling for record prices in China.",
+    p:"$5,000–$1.9 million+",
+    i:"https://via.placeholder.com/400x200?text=Tibetan+Mastiff",
+    med:"Prone to hip dysplasia and hypothyroidism. Give joint supplements (glucosamine), thyroid medication if diagnosed, and maintain a low-protein diet to prevent bloat."
+  },
+  {
+    n:"Samoyed",
+    g:"Spitz",
+    sp:"The 'Smiling Sammie'; bred for herding reindeer and pulling sleds in Siberia.",
+    h:"19–24 inches",
+    w:"35–65 lbs",
+    l:"12–14 years",
+    d:"Highly valued for its fluffy white coat and friendly 'smiling' face.",
+    p:"$4,000–$14,000",
+    i:"https://via.placeholder.com/400x200?text=Samoyed",
+    med:"Susceptible to diabetes and progressive retinal atrophy. Administer insulin if diabetic, antioxidant eye drops for retinal support, and regular dental cleanings."
+  },
+  {
+    n:"Löwchen",
+    g:"Companion",
+    sp:"A true Renaissance dog; often featured in 16th-century European noble portraits.",
+    h:"12–14 inches",
+    w:"9–18 lbs",
+    l:"13–15 years",
+    d:"A rare breed once favored by European royalty, often called 'little lion'.",
+    p:"$5,000–$12,000",
+    i:"https://via.placeholder.com/400x200?text=Lowchen",
+    med:"Generally healthy but can develop patellar luxation. Give joint support supplements, maintain healthy weight, and use pain-relief medication only under vet guidance."
+  },
+  {
+    n:"Chow Chow",
+    g:"Spitz",
+    sp:"One of the oldest dog breeds; its blue-black tongue is a unique genetic trait.",
+    h:"17–20 inches",
+    w:"45–70 lbs",
+    l:"9–15 years",
+    d:"An ancient Chinese breed recognized by its blue-black tongue and thick coat.",
+    p:"$3,000–$8,500+",
+    i:"https://via.placeholder.com/400x200?text=Chow+Chow",
+    med:"High risk of entropion (eyelid rolling inward) and elbow dysplasia. Requires surgical correction for entropion, anti-inflammatory drugs for joints, and frequent grooming to prevent skin infections."
+  },
+  {
+    n:"Azawakh",
+    g:"Sighthound",
+    sp:"Originated in the Sahel region; used by Tuareg nomads for hunting gazelles.",
+    h:"23–29 inches",
+    w:"33–55 lbs",
+    l:"12–15 years",
+    d:"A slender West African sighthound known for its incredible speed.",
+    p:"$3,000–$9,500",
+    i:"https://via.placeholder.com/400x200?text=Azawakh",
+    med:"Sensitive to anesthesia and cold. Use minimal sedation doses prescribed by a sighthound-savvy vet, provide warm coats in winter, and feed high-calorie food to maintain lean muscle."
+  },
+  {
+    n:"Akita Inu",
+    g:"Working",
+    sp:"Japan's national treasure; symbol of health, happiness, and long life.",
+    h:"24–28 inches",
+    w:"70–130 lbs",
+    l:"10–15 years",
+    d:"A famous Japanese breed, known for its loyalty and sturdy build.",
+    p:"$1,500–$4,500+",
+    i:"https://via.placeholder.com/400x200?text=Akita+Inu",
+    med:"Prone to autoimmune skin disorders (sebaceous adenitis) and hip dysplasia. Requires medicated shampoos, omega-3 fatty acid supplements, and joint chews with chondroitin."
+  },
+  {
+    n:"Pharaoh Hound",
+    g:"Hound",
+    sp:"One of the oldest domesticated breeds; blushes when excited (ears and nose turn pink).",
+    h:"21–25 inches",
+    w:"45–55 lbs",
+    l:"11–14 years",
+    d:"Malta's national dog, valued for its athleticism and intelligence.",
+    p:"$2,500–$7,500",
+    i:"https://via.placeholder.com/400x200?text=Pharaoh+Hound",
+    med:"Sensitive to insecticides and medications. Avoid flea collars with strong chemicals; use oral flea preventatives prescribed by vet. Monitor for patellar luxation and allergies."
+  },
+  {
+    n:"Dogo Argentino",
+    g:"Molosser",
+    sp:"Bred in Argentina for big-game hunting; illegal to own in some countries due to strength.",
+    h:"23–27 inches",
+    w:"80–100 lbs",
+    l:"9–15 years",
+    d:"A muscular, white, big-game hunting dog from Argentina.",
+    p:"$2,000–$8,000",
+    i:"https://via.placeholder.com/400x200?text=Dogo+Argentino",
+    med:"Deafness is common due to white coat genetics. Requires BAER hearing tests, anti-inflammatory medication for hip dysplasia, and skin cancer screening due to lack of pigment."
+  },
+  {
+    n:"Canadian Eskimo Dog",
+    g:"Spitz",
+    sp:"One of the rarest breeds in the world; fewer than 300 purebreds remain today.",
+    h:"20–28 inches",
+    w:"40–88 lbs",
+    l:"10–15 years",
+    d:"One of the rarest breeds, facing extinction, with very few left.",
+    p:"$7,000–$8,750",
+    i:"https://via.placeholder.com/400x200?text=Canadian+Eskimo+Dog",
+    med:"Prone to gastric torsion (bloat) and hip dysplasia. Feed smaller, frequent meals, avoid exercise after eating, and provide glucosamine-chondroitin supplements for joint health."
+  },
+  {
+    n:"Rottweiler",
+    g:"Working",
+    sp:"Descended from Roman cattle dogs; used in police and military work worldwide.",
+    h:"22–27 inches",
+    w:"80–135 lbs",
+    l:"8–10 years",
+    d:"A popular, loyal, and powerful working dog, often costly due to bloodline.",
+    p:"$2,000–$9,000",
+    i:"https://via.placeholder.com/400x200?text=Rottweiler",
+    med:"High risk of osteosarcoma (bone cancer) and subaortic stenosis. Requires regular cardiac screening, chemotherapy if cancer is detected, and weight management to reduce joint stress."
+  }
+];
+
+const grid=document.getElementById("grid");
+const searchInput=document.getElementById("searchInput");
+const clearBtn=document.getElementById("clearBtn");
+
+async function getDogImage(breedName) {
+    const cacheKey = 'dogImg_' + breedName;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) return cached;
+
+    try {
+        const queryName = breedName.toLowerCase().split(' ').reverse().join('/');
+        const response = await fetch(`https://dog.ceo/api/breed/${queryName}/images/random`);
+        const data = await response.json();
+
+        if (data.status === "success") {
+            localStorage.setItem(cacheKey, data.message);
+            return data.message;
+        } else {
+            const fallback = await fetch('https://dog.ceo/api/breeds/image/random');
+            const fallbackData = await fallback.json();
+            localStorage.setItem(cacheKey, fallbackData.message);
+            return fallbackData.message;
+        }
+    } catch (err) {
+        const fallbackUrl = "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=320&h=220";
+        localStorage.setItem(cacheKey, fallbackUrl);
+        return fallbackUrl;
+    }
+}
+
+async function makeCard(b){
+  const c=document.createElement("div");
+  c.className="card";
+  
+  const cacheKey = 'dogImg_' + b.n;
+  const cachedUrl = localStorage.getItem(cacheKey);
+  const imgSrc = cachedUrl || b.i;
+  
+  c.innerHTML=`
+    <div class="card-img-wrap">
+      <img src="${imgSrc}" alt="${b.n}">
+    </div>
+    <div class="card-body">
+      <div class="card-title">${b.n}</div>
+      <div class="card-price">${b.p}</div>
+      <div class="card-meta">
+        <strong>Group:</strong> ${b.g} &nbsp;|&nbsp; 
+        <strong>Height:</strong> ${b.h} &nbsp;|&nbsp; 
+        <strong>Weight:</strong> ${b.w} &nbsp;|&nbsp; 
+        <strong>Lifespan:</strong> ${b.l}
+      </div>
+      <div class="card-desc"><strong>Specialty:</strong> ${b.sp}</div>
+      <div class="card-desc">${b.d}</div>
+      <div class="medicine-box">
+        <h4>Health & Medicine</h4>
+        <p>${b.med}</p>
+      </div>
+  `;
+  
+  if (!cachedUrl) {
+    const realImgUrl = await getDogImage(b.n);
+    const imgElement = c.querySelector('img');
+    if (imgElement) imgElement.src = realImgUrl;
+  }
+  
+  return c;
+}
+
+async function render(list){
+  grid.innerHTML="";
+  for (const b of list) {
+    const card = await makeCard(b);
+    grid.appendChild(card);
+  }
+}
+function filter(){
+  const q=searchInput.value.trim().toLowerCase();
+  const res=breeds.filter(b=>(b.n+" "+b.g+" "+b.d+" "+b.p+" "+b.med).toLowerCase().includes(q));
+  render(res);
+}
+searchInput.addEventListener("input",filter);
+clearBtn.addEventListener("click",()=>{searchInput.value="";render(breeds);});
+render(breeds);
+</script>
+</body>
+</html>

@@ -105,6 +105,9 @@
             height: 180px;
             overflow: hidden;
             background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .card img {
@@ -112,6 +115,13 @@
             height: 100%;
             object-fit: cover;
             display: block;
+        }
+
+        .img-placeholder {
+            font-size: 0.75rem;
+            color: #aaa;
+            text-align: center;
+            padding: 10px;
         }
 
         .card-body {
@@ -180,7 +190,7 @@
     <div class="wrapper">
         <header>
             <h1>Popular International Dog Breeds Commonly Seen In India</h1>
-            <p>Explore well-known breeds with detailed health & care info.</p>
+            <p>Explore well-known breeds with detailed health &amp; care info.</p>
         </header>
 
         <div class="search-row">
@@ -190,109 +200,305 @@
 
         <div id="grid" class="grid"></div>
 
-        <div class="footer">Images cached locally after first load.</div>
+        <div class="footer">Images sourced from Wikipedia Commons.</div>
+    </div>
 
     <script>
+        // wiki = exact Wikipedia article title used to fetch the thumbnail via Wikipedia API
         const breeds = [
-            { n: "Labrador Retriever", g: "Sporting", h: "21.5–24.5 in", w: "55–80 lbs", l: "10–12 yrs", sp: "Originally from Newfoundland; America's most popular breed for 30+ years.", d: "Friendly retriever, outgoing and eager to please.", i: "https://via.placeholder.com/320x220?text=Labrador+Retriever", med: "Prone to hip dysplasia and obesity. Use glucosamine supplements, strict portion control, and avoid high-fat treats." },
-            { n: "German Shepherd Dog", g: "Herding", h: "22–26 in", w: "50–90 lbs", l: "7–10 yrs", sp: "Versatile working dog; used in police, military, and search & rescue globally.", d: "Intelligent working dog, loyal and versatile.", i: "https://via.placeholder.com/320x220?text=German+Shepherd", med: "Degenerative myelopathy and hip dysplasia common. DNA test for DM, use chondroitin supplements, and maintain lean muscle mass." },
-            { n: "Golden Retriever", g: "Sporting", h: "21.5–24 in", w: "55–75 lbs", l: "10–12 yrs", sp: "Bred in Scotland to retrieve waterfowl; famous for 'soft mouth' grip.", d: "Gentle retriever, affectionate and trainable.", i: "https://via.placeholder.com/320x220?text=Golden+Retriever", med: "High cancer rate (hemangiosarcoma, lymphoma). Schedule regular bloodwork; omega-3 supplements may help reduce inflammation." },
-            { n: "Pug", g: "Companion", h: "10–13 in", w: "14–18 lbs", l: "13–15 yrs", sp: "Ancient Chinese lapdog; face wrinkles were bred to resemble Chinese characters.", d: "Wrinkled toy dog, charming and comical.", i: "https://via.placeholder.com/320x220?text=Pug", med: "Brachycephalic syndrome causes breathing difficulty. Use harnesses only (never collars), keep cool in summer, and watch for corneal ulcers." },
-            { n: "Beagle", g: "Hound", h: "13–16 in", w: "20–30 lbs", l: "10–15 yrs", sp: "Bred for rabbit hunting in England; sense of smell is 1,000x stronger than humans.", d: "Small scent hound, merry and curious.", i: "https://via.placeholder.com/320x220?text=Beagle", med: "Epilepsy and cherry eye common. Anti-seizure medication (phenobarbital) if epileptic, and surgical correction for prolapsed third eyelid." },
-            { n: "Dachshund", g: "Hound", h: "5–9 in", w: "11–32 lbs", l: "12–16 yrs", sp: "German 'badger dog'; elongated body allows burrowing into dens.", d: "Long-bodied badger dog, bold and curious.", i: "https://via.placeholder.com/320x220?text=Dachshund", med: "Intervertebral disc disease (IVDD) is major risk. Use ramps for furniture, avoid jumping, and prescribe anti-inflammatory steroids if back pain occurs." },
-            { n: "Boxer", g: "Working", h: "21.5–25 in", w: "50–80 lbs", l: "10–12 yrs", sp: "Descended from war dogs of Assyrian empire; known for 'boxing' front paws.", d: "Energetic guardian, playful and loyal.", i: "https://via.placeholder.com/320x220?text=Boxer", med: "High risk of mast cell tumors and heart arrhythmias. Regular oncology screenings, Holter monitor for heart, and avoid grain-free diets linked to DCM." },
-            { n: "Rottweiler", g: "Working", h: "22–27 in", w: "80–135 lbs", l: "8–10 yrs", sp: "Roman cattle dog; almost went extinct in the 1800s before revival in Germany.", d: "Powerful guardian, confident and protective.", i: "https://via.placeholder.com/320x220?text=Rottweiler", med: "Osteosarcoma and subaortic stenosis. Annual cardiac screening, chemotherapy if cancer detected, and weight control to reduce joint stress." },
-            { n: "Doberman Pinscher", g: "Working", h: "24–28 in", w: "60–100 lbs", l: "10–12 yrs", sp: "Created by German tax collector Louis Dobermann for protection in 1890s.", d: "Elegant guardian, loyal and fearless.", i: "https://via.placeholder.com/320x220?text=Doberman+Pinscher", med: "Dilated cardiomyopathy (DCM) is common. Taurine and L-carnitine supplements, annual echocardiogram, and avoid grain-free foods." },
-            { n: "Great Dane", g: "Working", h: "28–32 in", w: "110–175 lbs", l: "7–10 yrs", sp: "German 'Apollo of Dogs'; originally bred to hunt wild boar.", d: "Gentle giant, dignified and affectionate.", i: "https://via.placeholder.com/320x220?text=Great+Dane", med: "Gastric dilatation-volvulus (bloat) is life-threatening. Elevated feeding bowls, gastropexy surgery recommended, and avoid exercise after eating." },
-            { n: "Dalmatian", g: "Companion", h: "19–24 in", w: "45–70 lbs", l: "10–13 yrs", sp: "Coat spots are present at birth; historically used as firehouse dogs.", d: "Spotted coach dog, athletic and outgoing.", i: "https://via.placeholder.com/320x220?text=Dalmatian", med: "Unique urinary system cannot process purines. Feed low-purine diet, monitor for urate stones, and ensure constant fresh water availability." },
-            { n: "Siberian Husky", g: "Working", h: "20–24 in", w: "35–60 lbs", l: "12–14 yrs", sp: "Bred by Chukchi people for sled pulling; can survive on minimal food.", d: "Medium sled dog, energetic and social.", i: "https://via.placeholder.com/320x220?text=Siberian+Husky", med: "Hypothyroidism and zinc-responsive dermatosis. Thyroid medication if diagnosed, zinc methionine supplements for skin, and never shave the double coat." },
-            { n: "Shih Tzu", g: "Companion", h: "8–11 in", w: "9–16 lbs", l: "10–18 yrs", sp: "Tibetan holy dog; name means 'lion' in Mandarin.", d: "Tibetan lapdog, sweet and outgoing.", i: "https://via.placeholder.com/320x220?text=Shih+Tzu", med: "Brachycephalic airway issues and renal dysplasia. Use harness only, keep cool environments, and kidney-support diet if renal issues detected." },
-            { n: "Pomeranian", g: "Toy", h: "6–7 in", w: "3–7 lbs", l: "12–16 yrs", sp: "Descended from large Arctic sled dogs; Queen Victoria made them popular.", d: "Tiny spitz, bold and fluffy.", i: "https://via.placeholder.com/320x220?text=Pomeranian", med: "Tracheal collapse and alopecia X common. Use harness (never collar), melatonin for coat loss, and monitor for heart murmurs." },
-            { n: "Chihuahua", g: "Toy", h: "5–8 in", w: "2–6 lbs", l: "14–16 yrs", sp: "Smallest dog breed; named after Mexican state of Chihuahua.", d: "Tiny companion, bold and expressive.", i: "https://via.placeholder.com/320x220?text=Chihuahua", med: "Dental disease and patellar luxation. Brush teeth daily or use enzymatic chews, avoid jumping from heights, and monitor knee joints." },
-            { n: "Cocker Spaniel", g: "Sporting", h: "13.5–15.5 in", w: "20–30 lbs", l: "10–14 yrs", sp: "Originally 'cocker' for woodcock hunting; split into American & English lines.", d: "Merry spaniel with long ears, affectionate.", i: "https://via.placeholder.com/320x220?text=Cocker+Spaniel", med: "Ear infections and progressive retinal atrophy. Clean ears weekly with vet solution, and DNA test for PRA blindness gene." },
-            { n: "Bulldog (English)", g: "Companion", h: "14–15 in", w: "40–50 lbs", l: "8–10 yrs", sp: "Descended from bull-baiting dogs; now a symbol of British tenacity.", d: "Stocky, gentle companion with wrinkled face.", i: "https://via.placeholder.com/320x220?text=English+Bulldog", med: "Brachycephalic syndrome and skin fold infections. Daily fold cleaning with chlorhexidine, avoid heat, and use soft harnesses only." },
-            { n: "Bulldog (French)", g: "Companion", h: "11–13 in", w: "16–28 lbs", l: "10–12 yrs", sp: "Bred in Paris by lace makers; bat ears are a defining trait.", d: "Bat-eared clown, affectionate and charming.", i: "https://via.placeholder.com/320x220?text=French+Bulldog", med: "Spinal disc issues and BOAS. Weight control crucial, avoid jumping, and consult specialist for soft palate surgery if snoring is severe." },
-            { n: "Saint Bernard", g: "Mountain", h: "26–30 in", w: "120–180 lbs", l: "8–10 yrs", sp: "Swiss Alpine rescue dog; barrel around neck is a myth added by artists.", d: "Giant Swiss rescue dog, gentle and kind.", i: "https://via.placeholder.com/320x220?text=Saint+Bernard", med: "Hip dysplasia and bloat. Feed from raised bowls, small frequent meals, and glucosamine supplements. Monitor for Wobbler syndrome." }
+            {
+                n: "Labrador Retriever",
+                g: "Sporting",
+                h: "21-24 in",
+                w: "55-80 lbs",
+                l: "10-12 yrs",
+                sp: "Friendly, intelligent, energetic",
+                d: "Popular retriever known for loyalty and trainability; great family companion.",
+                wiki: "Labrador_Retriever",
+                med: "Tip: Regular vet checkups, balanced diet, and daily exercise."
+            },
+            {
+                n: "German Shepherd",
+                g: "Herding",
+                h: "22-26 in",
+                w: "50-90 lbs",
+                l: "7-10 yrs",
+                sp: "Intelligent, loyal, protective",
+                d: "Working breed famous for obedience and strong guarding instincts.",
+                wiki: "German_Shepherd",
+                med: "Tip: Focus on training + mental stimulation."
+            },
+            {
+                n: "Golden Retriever",
+                g: "Sporting",
+                h: "21-24 in",
+                w: "55-75 lbs",
+                l: "10-12 yrs",
+                sp: "Friendly, devoted",
+                d: "Gentle and outgoing companion, often chosen for therapy work.",
+                wiki: "Golden_Retriever",
+                med: "Tip: Watch coat care (brushing) and hip health."
+            },
+            {
+                n: "Pug",
+                g: "Companion",
+                h: "10-13 in",
+                w: "14-18 lbs",
+                l: "13-15 yrs",
+                sp: "Charming, mischievous",
+                d: "Small breed with a big personality and affectionate nature.",
+                wiki: "Pug",
+                med: "Tip: Manage breathing/heat sensitivity and keep wrinkles clean."
+            },
+            {
+                n: "Beagle",
+                g: "Hound",
+                h: "13-15 in",
+                w: "20-30 lbs",
+                l: "10-15 yrs",
+                sp: "Merry, friendly, curious",
+                d: "Scent hound known for nose-first exploration and friendly behavior.",
+                wiki: "Beagle",
+                med: "Tip: Regular dental care + scent-safe exercise."
+            },
+            {
+                n: "Dachshund",
+                g: "Hound",
+                h: "8-9 in",
+                w: "16-32 lbs",
+                l: "12-16 yrs",
+                sp: "Clever, lively",
+                d: "Low-to-the-ground breed with strong digging instincts.",
+                wiki: "Dachshund",
+                med: "Tip: Support joints/spine; avoid jumping."
+            },
+            {
+                n: "Boxer",
+                g: "Working",
+                h: "21-25 in",
+                w: "50-70 lbs",
+                l: "10-12 yrs",
+                sp: "Playful, energetic, loyal",
+                d: "Athletic and fun-loving companion with protective loyalty.",
+                wiki: "Boxer_dog",
+                med: "Tip: Provide routine exercise + heartworm prevention."
+            },
+            {
+                n: "Rottweiler",
+                g: "Working",
+                h: "22-27 in",
+                w: "80-135 lbs",
+                l: "8-10 yrs",
+                sp: "Loyal, confident, strong",
+                d: "Large guardian breed—needs training, structure, and socialization.",
+                wiki: "Rottweiler",
+                med: "Tip: Proper nutrition + weight management."
+            },
+            {
+                n: "Dobermann",
+                g: "Working",
+                h: "24-28 in",
+                w: "60-100 lbs",
+                l: "10-12 yrs",
+                sp: "Fearless, alert",
+                d: "Highly driven and intelligent; thrives with consistent training.",
+                wiki: "Dobermann",
+                med: "Tip: Monitor heart health and provide mental challenge."
+            },
+            {
+                n: "Great Dane",
+                g: "Working",
+                h: "28-34 in",
+                w: "100-200 lbs",
+                l: "7-10 yrs",
+                sp: "Gentle, friendly, giant",
+                d: "Huge companion breed that still needs careful exercise and diet.",
+                wiki: "Great_Dane",
+                med: "Tip: Slow-feeding + manage bloat risk."
+            },
+            {
+                n: "Dalmatian",
+                g: "Sporting",
+                h: "19-23 in",
+                w: "45-70 lbs",
+                l: "10-13 yrs",
+                sp: "Energetic, sporty",
+                d: "Iconic spotted breed—requires active lifestyle.",
+                wiki: "Dalmatian_dog",
+                med: "Tip: Regular coat brushing + exercise."
+            },
+            {
+                n: "Siberian Husky",
+                g: "Working",
+                h: "20-24 in",
+                w: "35-60 lbs",
+                l: "12-14 yrs",
+                sp: "Friendly, outgoing",
+                d: "Endurance sled dog with striking eyes and high energy.",
+                wiki: "Siberian_Husky",
+                med: "Tip: Provide mental + physical activity and coat care."
+            },
+            {
+                n: "Shih Tzu",
+                g: "Companion",
+                h: "9-10 in",
+                w: "9-16 lbs",
+                l: "10-18 yrs",
+                sp: "Affectionate, lively",
+                d: "Small companion dog with long, luxurious coat.",
+                wiki: "Shih_Tzu",
+                med: "Tip: Grooming routine + eye/tear stain care."
+            },
+            {
+                n: "Pomeranian",
+                g: "Toy",
+                h: "8-11 in",
+                w: "3-7 lbs",
+                l: "12-16 yrs",
+                sp: "Bold, lively",
+                d: "Tiny spitz with big confidence and fluffy coat.",
+                wiki: "Pomeranian_dog",
+                med: "Tip: Dental care and consistent grooming."
+            },
+            {
+                n: "Chihuahua",
+                g: "Toy",
+                h: "6-9 in",
+                w: "2-6 lbs",
+                l: "14-16 yrs",
+                sp: "Alert, courageous",
+                d: "Small but fearless companion—great for attentive owners.",
+                wiki: "Chihuahua_(dog)",
+                med: "Tip: Watch portion size and dental health."
+            },
+            {
+                n: "English Cocker Spaniel",
+                g: "Sporting",
+                h: "14-15 in",
+                w: "20-30 lbs",
+                l: "10-14 yrs",
+                sp: "Gentle, affectionate",
+                d: "Sporting dog with friendly temperament and silky coat.",
+                wiki: "English_Cocker_Spaniel",
+                med: "Tip: Ear care + coat brushing."
+            },
+            {
+                n: "English Bulldog",
+                g: "Non-Sporting",
+                h: "14-15 in",
+                w: "40-51 lbs",
+                l: "8-10 yrs",
+                sp: "Friendly, courageous",
+                d: "Wrinkly companion breed with a calm, stubborn charm.",
+                wiki: "Bulldog",
+                med: "Tip: Skin fold cleaning + breathing awareness."
+            },
+            {
+                n: "French Bulldog",
+                g: "Non-Sporting",
+                h: "11-12 in",
+                w: "20-28 lbs",
+                l: "10-12 yrs",
+                sp: "Playful, smart",
+                d: "Low-exercise, high-love companion with bat ears.",
+                wiki: "French_Bulldog",
+                med: "Tip: Heat sensitivity—avoid overexertion."
+            },
+            {
+                n: "Saint Bernard",
+                g: "Working",
+                h: "26-30 in",
+                w: "120-180 lbs",
+                l: "8-10 yrs",
+                sp: "Gentle, friendly giant",
+                d: "Big-hearted rescue breed needing structured care.",
+                wiki: "St._Bernard_(dog)",
+                med: "Tip: Weight management + regular vet checkups."
+            }
         ];
+
+        // Cache for fetched image URLs so we don't re-fetch on search filter
+        const imgCache = {};
+
+        // Fetch thumbnail from Wikipedia's open CORS API
+        async function getWikiImage(wikiTitle) {
+            if (imgCache[wikiTitle]) return imgCache[wikiTitle];
+            try {
+                const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiTitle)}`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("bad response");
+                const data = await res.json();
+                const src = data.originalimage?.source || data.thumbnail?.source || "";
+                imgCache[wikiTitle] = src;
+                return src;
+            } catch (e) {
+                imgCache[wikiTitle] = "";
+                return "";
+            }
+        }
 
         const grid = document.getElementById("grid");
         const searchInput = document.getElementById("searchInput");
         const clearBtn = document.getElementById("clearBtn");
 
-        async function getDogImage(breedName) {
-            const cacheKey = 'dogImg_' + breedName;
-            const cached = localStorage.getItem(cacheKey);
-            if (cached) return cached;
-
-            try {
-                const queryName = breedName.toLowerCase().split(' ').reverse().join('/');
-                const response = await fetch(`https://dog.ceo/api/breed/${queryName}/images/random`);
-                const data = await response.json();
-
-                if (data.status === "success") {
-                    localStorage.setItem(cacheKey, data.message);
-                    return data.message;
-                } else {
-                    const fallback = await fetch('https://dog.ceo/api/breeds/image/random');
-                    const fallbackData = await fallback.json();
-                    localStorage.setItem(cacheKey, fallbackData.message);
-                    return fallbackData.message;
-                }
-            } catch (err) {
-                const fallbackUrl = "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=320&h=220";
-                localStorage.setItem(cacheKey, fallbackUrl);
-                return fallbackUrl;
-            }
-        }
-
-        async function makeCard(b) {
+        function makeCard(b, imgSrc) {
             const c = document.createElement("div");
             c.className = "card";
-
-            const cacheKey = 'dogImg_' + b.n;
-            const cachedUrl = localStorage.getItem(cacheKey);
-            const imgSrc = cachedUrl || b.i;
+            const imgHtml = imgSrc
+                ? `<img src="${imgSrc}" alt="${b.n}" loading="lazy">`
+                : `<div class="img-placeholder">📷 Loading...</div>`;
 
             c.innerHTML = `
-                <div class="card-img-wrap">
-                    <img src="${imgSrc}" alt="${b.n}">
+                <div class="card-img-wrap" id="imgwrap-${b.wiki}">
+                    ${imgHtml}
                 </div>
                 <div class="card-body">
                     <div class="card-title">${b.n}</div>
                     <div class="card-meta">
-                        <strong>Group:</strong> ${b.g} &nbsp;|&nbsp; 
-                        <strong>H:</strong> ${b.h} &nbsp;|&nbsp; 
-                        <strong>W:</strong> ${b.w} &nbsp;|&nbsp; 
+                        <strong>Group:</strong> ${b.g} &nbsp;|&nbsp;
+                        <strong>H:</strong> ${b.h} &nbsp;|&nbsp;
+                        <strong>W:</strong> ${b.w} &nbsp;|&nbsp;
                         <strong>Life:</strong> ${b.l}
                     </div>
                     <div class="card-desc"><strong>Specialty:</strong> ${b.sp}</div>
                     <div class="card-desc">${b.d}</div>
                     <div class="med-box">
-                        <h4>Health & Medicine</h4>
+                        <h4>Health &amp; Medicine</h4>
                         <p>${b.med}</p>
                     </div>
+                </div>
             `;
-
-            if (!cachedUrl) {
-                const realImgUrl = await getDogImage(b.n);
-                const imgElement = c.querySelector('img');
-                if (imgElement) imgElement.src = realImgUrl;
-            }
-
             return c;
         }
 
         async function render(list) {
             grid.innerHTML = "";
-            for (const b of list) {
-                const card = await makeCard(b);
+            // First pass: render all cards immediately with placeholder
+            const cards = list.map(b => {
+                const cached = imgCache[b.wiki] || "";
+                const card = makeCard(b, cached);
                 grid.appendChild(card);
-            }
+                return { b, card };
+            });
+
+            // Second pass: fetch images and inject them (parallel)
+            await Promise.all(cards.map(async ({ b, card }) => {
+                if (imgCache[b.wiki]) return; // already have it
+                const src = await getWikiImage(b.wiki);
+                const wrap = card.querySelector(".card-img-wrap");
+                if (wrap) {
+                    wrap.innerHTML = src
+                        ? `<img src="${src}" alt="${b.n}" loading="lazy">`
+                        : `<div class="img-placeholder">Image unavailable</div>`;
+                }
+            }));
         }
 
         function filter() {
             const q = searchInput.value.trim().toLowerCase();
-            const res = breeds.filter(b => (b.n + " " + b.g + " " + b.d + " " + b.med).toLowerCase().includes(q));
+            const res = breeds.filter(b =>
+                (b.n + " " + b.g + " " + b.d + " " + b.med).toLowerCase().includes(q)
+            );
             render(res);
         }
 
